@@ -55,4 +55,4 @@ youtube_search_python
 psycopg2-binary
 
 # Music bot (Telegram voice chat streaming)
-py-tgcalls==2.2.8
+py-tgcalls==2.3.3
