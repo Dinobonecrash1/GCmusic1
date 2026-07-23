@@ -21,7 +21,7 @@ gtts
 gpytranslate==1.5.1
 hachoir==3.3.0
 heroku3
-html2text==2024.2.26
+html2text==2025.4.15
 jikanpy==4.3.2
 lxml
 markdown2==2.5.0
