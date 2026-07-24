@@ -27,7 +27,7 @@ lxml
 markdown2==2.5.0
 motor==3.6.0
 nekos.py
-opencv-python
+opencv-python-headless
 pretty-errors
 pyfiglet
 pykeyboard==0.1.5
