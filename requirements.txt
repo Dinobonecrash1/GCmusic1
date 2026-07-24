@@ -3,7 +3,7 @@ alphabet_detector
 apscheduler==3.6.3
 beautifulsoup4==4.12.3
 bing_image_downloader==1.1.2
-bleach==6.1.0
+bleach==6.4.0
 bs4==0.0.2
 cachetools==4.2.2
 cloudscraper==1.2.71
