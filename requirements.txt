@@ -1,5 +1,5 @@
 aiohttp==3.9.5
-alphabet_detector
+alphabет_detector
 apscheduler==3.6.3
 beautifulsoup4==4.12.3
 bing_image_downloader==1.1.2
@@ -22,6 +22,7 @@ gpytranslate==1.5.1
 hachoir==3.3.0
 heroku3
 html2text==2024.2.26
+jikanpy-v4
 lxml
 markdown2==2.5.0
 motor==3.6.0
@@ -53,4 +54,4 @@ youtube_search_python
 psycopg2-binary
 
 # Music bot (Telegram voice chat streaming)
-py-tgcalls>=4.0.0,<5.0.0
+pytgcalls>=2.2.8
