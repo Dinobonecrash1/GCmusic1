@@ -1,105 +1,162 @@
-# LadyRezebb — Group Management + Music Bot
+<p align="center">
+  <h1 align="center">GCmusic1</h1>
+  <p align="center">A feature-rich Telegram bot with music streaming, group management, chatbot, anime info, and more.</p>
+</p>
 
-Telegram group management bot (based on MukeshRobot) with a **music module for
-voice chats** powered by [PyTgCalls](https://github.com/pytgcalls/pytgcalls).
+<p align="center">
+  <img src="https://img.shields.io/badge/python-3.10%2B-blue?logo=python&logoColor=white" alt="Python 3.10+">
+  <img src="https://img.shields.io/badge/license-GPL--3.0-green" alt="License GPL-3.0">
+  <img src="https://img.shields.io/badge/telegram-bot-blue?logo=telegram" alt="Telegram Bot">
+  <img src="https://img.shields.io/badge/pytgcalls-v4-orange" alt="PyTgCalls v4">
+</p>
 
-## What's inside
+---
 
-* Full group management (bans, mutes, filters, notes, welcome, warns, feds, AFK, ...).
-* AI, anime, utility, and fun modules.
-* **NEW: Music + Video module** for Telegram group **voice chats**:
-  * `/play` — stream audio from a YouTube link, Spotify link, or search query.
-  * `/vplay` — stream **video** (up to 720p) into the voice chat.
-  * `/pause`, `/resume`, `/skip`, `/stop`/`/end`, `/queue` — playback controls (admin-only).
-  * `/player` — interactive control panel with inline buttons (Pause / Resume / Skip / Stop / Queue).
-  * `/topsongs` — top 10 most-requested tracks per group (MongoDB-backed leaderboard).
-  * **Auto-advance** — when a stream ends, the next track in the queue starts automatically.
-* YouTube (yt-dlp) and Spotify (resolved via YouTube) as sources.
+## Features
 
-## Fixes applied
+### 🎵 Music & Video Streaming
+Stream audio/video in Telegram voice chats via PyTgCalls v4.
 
-* `MukeshRobot/__main__.py` — added the missing `html`, `json`, `traceback` imports (previously crashed inside `error_handler`).
-* `requirements.txt` — removed broken `asyncio==3.4.3` pin (which is stdlib now and breaks on Python 3.11), relaxed `lxml` pin, added music dependencies (`py-tgcalls`, `yt-dlp`, `spotipy`).
-* Refreshed `Dockerfile` for Python 3.11 + FFmpeg + libopus.
+| Command | Description |
+|---------|-------------|
+| `/play <query/url>` | Play audio in voice chat |
+| `/vplay <query/url>` | Play video in voice chat |
+| `/pause` | Pause playback |
+| `/resume` | Resume playback |
+| `/skip` | Skip to next track |
+| `/stop` | Stop playback and leave VC |
+| `/queue` | Show current queue |
+| `/player` | Show now-playing panel |
+| `/topsongs` | Show trending songs |
+| `/song <query>` | Download song as audio file |
 
-## Deployment
+### 👮 Group Administration
+Ban, kick, mute, warn, locks, notes, rules, filters, antiflood, welcome messages, blacklist, and more.
 
-### 1. Environment variables
+### 🤖 Chatbot
+AI-powered conversational chatbot. Toggle with `/chatbot` (admin only). Configure via `CHATBOT_API_URL`.
 
-Copy `.env.example` → `.env` and fill in the values:
+### 🎌 Anime & Manga
+- `/anime <name>` — anime info from AniList
+- `/manga <name>` — manga info
+- `/character <name>` — character lookup
+- `/user <MAL username>` — MyAnimeList profile
+- `/upcoming` — upcoming anime list
+- `/airing <name>` — airing schedule
 
-| Variable          | How to obtain                                                                 |
-| ----------------- | ----------------------------------------------------------------------------- |
-| `TOKEN`           | Chat with [@BotFather](https://t.me/BotFather) → `/newbot`                    |
-| `API_ID`/`API_HASH` | https://my.telegram.org → API development tools                            |
-| `STRING_SESSION` | Pyrogram v2 string session of your **assistant** userbot (a real Telegram account, **not the bot**). See helper below. |
-| `MONGO_DB_URI`   | https://mongodb.com/atlas — free tier is fine                                 |
-| `DATABASE_URL`   | Postgres URL (Heroku Postgres / Neon / Railway Postgres)                       |
-| `OWNER_ID`       | Your Telegram numeric user ID (send `/id` to [@MissRose_bot](https://t.me/MissRose_bot)) |
-| `SUPPORT_CHAT`   | Username of your support group (no `@`)                                        |
-| `EVENT_LOGS`     | Numeric ID of a channel where the bot posts important events                   |
-| `START_IMG`      | Telegraph URL of the picture shown on `/start`                                 |
+### 🎲 Extras
+Fun commands, AI image generation, weather, Wikipedia, URL shortener, currency converter, translation, and more.
 
-### 2. Generate the Pyrogram STRING_SESSION (assistant userbot)
+---
 
-On your local machine (not the deployment server):
+## Requirements
+
+- **Python** 3.10+
+- **MongoDB** (required for bot data)
+- **PostgreSQL** (optional, for group management SQL features)
+- **Telegram API credentials** (API_ID, API_HASH from [my.telegram.org](https://my.telegram.org))
+- **Bot token** from [@BotFather](https://t.me/BotFather)
+- **Pyrogram v2 string session** (for userbot music streaming)
+
+---
+
+## Setup & Installation
+
+```bash
+# 1. Clone the repository
+git clone https://github.com/Dinobonecrash1/GCmusic1.git
+cd GCmusic1
+
+# 2. Create your environment file
+cp .env.example .env
+
+# 3. Edit .env and fill in your credentials
+nano .env
+
+# 4. Install dependencies
+pip install -r requirements.txt
+
+# 5. Run the bot
+python -m MukeshRobot
+```
+
+### Generating a String Session
 
 ```bash
 pip install "pyrogram==2.0.106" "tgcrypto==1.2.5"
-python - <<'PY'
-from pyrogram import Client
-api_id  = int(input("API_ID: "))
-api_hash = input("API_HASH: ").strip()
-with Client("gen", api_id=api_id, api_hash=api_hash, in_memory=True) as app:
-    print("\n\nSTRING_SESSION =", app.export_session_string())
-PY
+python -c "from pyrogram import Client; \
+           Client('gen', api_id=YOUR_API_ID, api_hash='YOUR_API_HASH').run(lambda: None)"
 ```
+Then use `Client.export_session_string()` from an interactive shell.
 
-Paste the printed value into `.env` as `STRING_SESSION`. **This is the account
-that will actually join voice chats — add it to your groups and promote it with
-"Manage Voice Chats" permission.**
+---
 
-### 3. Deploy
+## Environment Variables
 
-**Docker (recommended for VPS / Koyeb / Railway):**
+| Variable | Required | Description |
+|----------|----------|-------------|
+| `TOKEN` | ✅ | Telegram bot token from BotFather |
+| `API_ID` | ✅ | Telegram API ID from my.telegram.org |
+| `API_HASH` | ✅ | Telegram API hash from my.telegram.org |
+| `STRING_SESSION` | ✅ | Pyrogram v2 string session for the assistant userbot |
+| `MONGO_DB_URI` | ✅ | MongoDB connection URI |
+| `DATABASE_URL` | ❌ | PostgreSQL URL (for SQL-based features) |
+| `OWNER_ID` | ✅ | Your Telegram user ID |
+| `SUPPORT_CHAT` | ❌ | Support group username (without @) |
+| `EVENT_LOGS` | ❌ | Chat ID for event logging |
+| `START_IMG` | ❌ | Image URL shown on /start |
+| `SPOTIFY_CLIENT_ID` | ❌ | Spotify app client ID (for link resolution) |
+| `SPOTIFY_CLIENT_SECRET` | ❌ | Spotify app client secret |
+| `CASH_API_KEY` | ❌ | API key for currency conversion |
+| `TIME_API_KEY` | ❌ | API key for timezone lookups |
+| `CHATBOT_API_URL` | ❌ | Custom chatbot API endpoint URL |
+| `ENV` | ❌ | Set to `True` for production |
+| `ALLOW_EXCL` | ❌ | Allow `!` as command prefix (default: True) |
+| `DEL_CMDS` | ❌ | Delete command messages after execution |
+| `STRICT_GBAN` | ❌ | Enforce global bans strictly |
+| `WORKERS` | ❌ | Number of worker threads (default: 8) |
+
+---
+
+## Deployment
+
+### VPS / Local Server
+Follow the setup instructions above. Use `screen`, `tmux`, or a systemd service to keep the bot running.
 
 ```bash
-docker build -t ladyrezebb .
-docker run --env-file .env --restart unless-stopped ladyrezebb
+# Example with screen
+screen -S gcmusic
+python -m MukeshRobot
+# Detach: Ctrl+A, D
 ```
 
-**Heroku (needs the FFmpeg buildpack in addition to Python):**
+### Heroku
+1. Fork this repository.
+2. Create a new Heroku app.
+3. Set all required environment variables in the Heroku dashboard (Settings → Config Vars).
+4. Connect your GitHub fork and deploy.
 
-```bash
-heroku create your-app
-heroku buildpacks:add https://github.com/jonathanong/heroku-buildpack-ffmpeg-latest
-heroku buildpacks:add heroku/python
-heroku config:set $(cat .env | xargs)
-git push heroku main
-heroku ps:scale worker=1
-```
+> **Note**: Heroku's free tier has been discontinued. A paid plan is required.
 
-**Local:**
+---
 
-```bash
-apt-get install -y ffmpeg
-pip install -r requirements.txt
-export $(grep -v '^#' .env | xargs)
-python3 -m MukeshRobot
-```
+## Contributing
 
-## Music & video usage
+Contributions are welcome! Please:
+1. Fork the repository
+2. Create a feature branch (`git checkout -b feature/my-feature`)
+3. Commit your changes (`git commit -m 'feat: add my feature'`)
+4. Push to the branch (`git push origin feature/my-feature`)
+5. Open a Pull Request
 
-1. Add the **bot** (your `TOKEN` account) to the group — it handles commands.
-2. Add the **assistant userbot** (your `STRING_SESSION` account) to the same group and promote it with *Manage Voice Chats*.
-3. Start a voice chat in the group.
-4. Send `/play <query or YouTube/Spotify link>` for audio, or `/vplay <...>` for video (up to 720p).
-5. Control with `/pause`, `/resume`, `/skip`, `/stop`, `/queue`, or open the interactive panel with `/player`.
-6. See the group's most-played tracks with `/topsongs`.
-7. When a track ends, the next one in the queue plays automatically — no need to `/skip` manually.
+---
 
-## Notes
+## License
 
-* The music module fails softly if `API_ID` / `API_HASH` / `STRING_SESSION` are not set — the rest of the bot still works.
-* Spotify link resolution requires `SPOTIFY_CLIENT_ID` and `SPOTIFY_CLIENT_SECRET` (from https://developer.spotify.com/dashboard). Without them, Spotify links won't be resolved (search queries and YouTube links keep working).
-* FFmpeg + libopus must be installed on the host (already handled in the Dockerfile).
+This project is licensed under the [GNU General Public License v3.0](LICENSE).
+
+---
+
+<p align="center">
+  Made with ❤️ for the Telegram community
+</p>
