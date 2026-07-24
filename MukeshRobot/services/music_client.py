@@ -1,9 +1,9 @@
 """
-Music/Video streaming client — Pyrogram userbot + PyTgCalls.
+Music/Video streaming client — Pyrogram userbot + PyTgCalls v4.
 
 Runs a background asyncio loop in a dedicated thread so the synchronous
 python-telegram-bot 13.15 handlers can drive it via `run_coroutine_threadsafe`.
-Also handles auto-advance via PyTgCalls `StreamEnded` update.
+Also handles auto-advance via PyTgCalls stream-end callbacks.
 """
 
 import asyncio
@@ -15,7 +15,6 @@ from typing import Callable, Optional
 from pyrogram import Client
 from pytgcalls import PyTgCalls
 from pytgcalls.types import MediaStream, AudioQuality, VideoQuality
-from pytgcalls.types.stream import StreamAudioEnded, StreamVideoEnded
 
 LOGGER = logging.getLogger(__name__)
 
@@ -75,13 +74,10 @@ class MusicClient:
             await self.app.start()
             await self.calls.start()
 
-            @self.calls.on_update(StreamAudioEnded())
-            async def _audio_ended(_, update):
-                await self._advance(update.chat_id)
-
-            @self.calls.on_update(StreamVideoEnded())
-            async def _video_ended(_, update):
-                await self._advance(update.chat_id)
+            @self.calls.on_stream_end()
+            async def _stream_ended(_, update):
+                chat_id = update.chat_id
+                await self._advance(chat_id)
 
             LOGGER.info("MusicClient started successfully.")
         except Exception as exc:  # noqa: BLE001
@@ -114,13 +110,14 @@ class MusicClient:
         if item.get("video"):
             stream = MediaStream(
                 item["url"],
-                audio_flags=MediaStream.Flags.REQUIRED,
-                video_flags=MediaStream.Flags.REQUIRED,
                 audio_parameters=AudioQuality.STUDIO,
                 video_parameters=VideoQuality.HD_720p,
             )
         else:
-            stream = MediaStream(item["url"], audio_flags=MediaStream.Flags.REQUIRED)
+            stream = MediaStream(
+                item["url"],
+                audio_parameters=AudioQuality.STUDIO,
+            )
         await self.calls.play(chat_id, stream)
 
     # -------- sync wrappers --------
