@@ -56,7 +56,7 @@ tgcrypto==1.2.5
 unidecode
 wikipedia==1.4.0
 wget
-yt-dlp>=2024.10.7
+yt-dlp>=2026.8.19
 youtube_search
 youtube_search_python
 psycopg2-binary
