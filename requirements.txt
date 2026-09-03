@@ -39,7 +39,7 @@ pykeyboard==0.1.5
 pymongo==4.9.2
 pynewtonmath==1.0.1
 PyMultiDictionary
-pyrate-limiter==2.10.0
+pyrate-limiter==4.5.0
 pyshorteners
 pyrogram==2.0.106
 python-telegram-bot==13.15
