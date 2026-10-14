@@ -1,5 +1,5 @@
 aiofiles
-aiohttp==3.9.5
+aiohttp==3.14.5
 alphabet_detector
 apscheduler==3.6.3
 beautifulsoup4==4.12.3
